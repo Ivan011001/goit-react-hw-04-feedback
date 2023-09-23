@@ -4,6 +4,7 @@ import FeedbackOptions from '../FeedbackOptions';
 import Statistics from '../Statistics';
 import Notification from '../Notification';
 
+import { RatingButton } from 'components/FeedbackOptions/FeedbackOptions.styled';
 import { AppContainer } from './App.styled';
 
 export default function App() {
@@ -30,6 +31,12 @@ export default function App() {
       setBad(bad);
     }
   }, []);
+
+  const resetFeedback = () => {
+    setGood(0);
+    setNeutral(0);
+    setBad(0);
+  };
 
   const totalFeedback = good + neutral + bad;
 
@@ -65,13 +72,23 @@ export default function App() {
 
       <Section title="Statistics">
         {totalFeedback ? (
-          <Statistics
-            good={good}
-            neutral={neutral}
-            bad={bad}
-            total={totalFeedback}
-            positivePercentage={positivePercentage}
-          />
+          <>
+            <Statistics
+              good={good}
+              neutral={neutral}
+              bad={bad}
+              total={totalFeedback}
+              positivePercentage={positivePercentage}
+            />
+
+            <RatingButton
+              style={{ float: 'right' }}
+              type="button"
+              onClick={resetFeedback}
+            >
+              Reset
+            </RatingButton>
+          </>
         ) : (
           <Notification message="There is no feedback yet..." />
         )}
