@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, useState } from 'react';
 import Section from '../Section';
 import FeedbackOptions from '../FeedbackOptions';
 import Statistics from '../Statistics';
@@ -6,57 +6,56 @@ import Notification from '../Notification';
 
 import { AppContainer } from './App.styled';
 
-export default class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+export default function App() {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const totalFeedback = good + neutral + bad;
+
+  const positivePercentage = totalFeedback ? (good / totalFeedback) * 100 : 0;
+
+  const feedbackClickHadler = type => {
+    switch (type) {
+      case 'good':
+        setGood(prev => prev + 1);
+        return;
+
+      case 'bad':
+        setBad(prev => prev + 1);
+        return;
+
+      case 'neutral':
+        setNeutral(prev => prev + 1);
+        return;
+
+      default:
+        throw new Error(`Unknown type of feedback: ${type}`);
+    }
   };
 
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    return good + neutral + bad;
-  };
+  return (
+    <AppContainer>
+      <Section title="Please leave feedback">
+        <FeedbackOptions
+          options={['good', 'neutral', 'bad']}
+          onLeaveFeedback={feedbackClickHadler}
+        />
+      </Section>
 
-  countPositiveFeedbackPercentage = () => {
-    const { good } = this.state;
-    const total = this.countTotalFeedback();
-    return total ? (good / total) * 100 : 0;
-  };
-
-  feedbackClickHadler = type => {
-    this.setState(prevState => ({ [type]: prevState[type] + 1 }));
-  };
-
-  render() {
-    const { good, neutral, bad } = this.state;
-    const options = Object.keys(this.state);
-    const total = this.countTotalFeedback();
-    const positivePercentage = this.countPositiveFeedbackPercentage();
-
-    return (
-      <AppContainer>
-        <Section title="Please leave feedback">
-          <FeedbackOptions
-            options={options}
-            onLeaveFeedback={this.feedbackClickHadler}
+      <Section title="Statistics">
+        {totalFeedback ? (
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={totalFeedback}
+            positivePercentage={positivePercentage}
           />
-        </Section>
-
-        <Section title="Statistics">
-          {total ? (
-            <Statistics
-              good={good}
-              neutral={neutral}
-              bad={bad}
-              total={total}
-              positivePercentage={positivePercentage}
-            />
-          ) : (
-            <Notification message="There is no feedback yet..." />
-          )}
-        </Section>
-      </AppContainer>
-    );
-  }
+        ) : (
+          <Notification message="There is no feedback yet..." />
+        )}
+      </Section>
+    </AppContainer>
+  );
 }
