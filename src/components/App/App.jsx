@@ -22,10 +22,13 @@ export default function App() {
   }, [good, neutral, bad]);
 
   useEffect(() => {
-    const { good, neutral, bad } = JSON.parse(localStorage.getItem('feedback'));
-    setGood(good);
-    setNeutral(neutral);
-    setBad(bad);
+    const parsedFeedback = JSON.parse(localStorage.getItem('feedback'));
+    if (parsedFeedback) {
+      const { good, neutral, bad } = parsedFeedback;
+      setGood(good);
+      setNeutral(neutral);
+      setBad(bad);
+    }
   }, []);
 
   const totalFeedback = good + neutral + bad;
