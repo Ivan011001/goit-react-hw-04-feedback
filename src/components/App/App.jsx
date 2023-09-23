@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Section from '../Section';
 import FeedbackOptions from '../FeedbackOptions';
 import Statistics from '../Statistics';
@@ -7,9 +7,26 @@ import Notification from '../Notification';
 import { AppContainer } from './App.styled';
 
 export default function App() {
-  const [good, setGood] = useState(0);
+  const [good, setGood] = useState();
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
+  const mount = useRef(true);
+
+  useEffect(() => {
+    if (mount.current) {
+      mount.current = false;
+      return;
+    }
+
+    localStorage.setItem('feedback', JSON.stringify({ good, neutral, bad }));
+  }, [good, neutral, bad]);
+
+  useEffect(() => {
+    const { good, neutral, bad } = JSON.parse(localStorage.getItem('feedback'));
+    setGood(good);
+    setNeutral(neutral);
+    setBad(bad);
+  }, []);
 
   const totalFeedback = good + neutral + bad;
 
